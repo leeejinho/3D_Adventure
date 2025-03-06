@@ -41,7 +41,7 @@ public class PlayerController : MonoBehaviour
         InitInputAction();
     }
 
-    void Update()
+    void FixedUpdate()
     {
         Move();
     }
@@ -80,6 +80,7 @@ public class PlayerController : MonoBehaviour
         dir.y = rigid.velocity.y;
 
         rigid.velocity = dir;
+        //rigid.AddForce(dir, ForceMode.VelocityChange);
     }
 
     void OnMove(InputAction.CallbackContext context)
@@ -103,7 +104,7 @@ public class PlayerController : MonoBehaviour
     {
         if (IsGround())
         {
-            rigid.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
     }
 
@@ -111,7 +112,7 @@ public class PlayerController : MonoBehaviour
     {
         Ray ray = new Ray(transform.position, Vector3.down);
        
-        if (Physics.Raycast(ray, 0.1f, groundLayerMask))
+        if (Physics.Raycast(ray, 0.2f, groundLayerMask))
         {
              return true;
         }
@@ -131,5 +132,10 @@ public class PlayerController : MonoBehaviour
     void onLook(InputAction.CallbackContext context)
     {
         mouseDelta = context.ReadValue<Vector2>();
+    }
+
+    public void Bounce(float bounseForce)
+    {
+        rigid.AddForce(Vector3.up * bounseForce, ForceMode.Impulse);
     }
 }
