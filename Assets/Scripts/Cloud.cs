@@ -8,9 +8,9 @@ public class Cloud : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if(collision.gameObject.CompareTag("Player"))
+        if(collision.gameObject.TryGetComponent(out PlayerController controller))
         {
-            collision.gameObject.GetComponent<PlayerController>().Bounce(bounceForce);
+            controller.Bounce(bounceForce);
         }
     }
 }
