@@ -8,8 +8,9 @@ public class PlayerController : MonoBehaviour
     [Header("Move")]
     public float moveSpeed;
     public float runSpeed;
-    private bool isRun;
     public float jumpForce;
+    public float runStaminaPer;
+    public bool isRun;
     public LayerMask groundLayerMask;
     private Vector2 moveDir;
 
@@ -75,12 +76,17 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
+        // 달리는 상태일 때 스테미나 감소
+        if (isRun)
+        {
+            isRun = GameManager.Instance.player.condition.UseStamina(runStaminaPer * Time.fixedDeltaTime);
+        }
+
         Vector3 dir = (transform.forward * moveDir.y) + (transform.right * moveDir.x);
         dir *= isRun ? runSpeed : moveSpeed;
         dir.y = rigid.velocity.y;
 
         rigid.velocity = dir;
-        //rigid.AddForce(dir, ForceMode.VelocityChange);
     }
 
     void OnMove(InputAction.CallbackContext context)
@@ -92,9 +98,9 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
         {
-            isRun = true; 
+            isRun = true;
         }
-        else if (context.canceled)
+        else
         {
             isRun = false;
         }
