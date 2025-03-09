@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,9 @@ public class PlayerController : MonoBehaviour
     private InputAction jump;
     private InputAction look;
     private InputAction run;
+    private InputAction interaction;
+    [HideInInspector] public event Action actionInteract;
+    private InputAction Attack;
 
     private Rigidbody rigid;
 
@@ -70,6 +74,11 @@ public class PlayerController : MonoBehaviour
         run = inputPlayer.FindAction("Run");
         run.performed += OnRun;
         run.canceled += OnRun;
+
+        interaction = inputPlayer.FindAction("Interaction");
+        interaction.started += OnInteract;
+
+        Attack = inputPlayer.FindAction("Attack");
 
         inputPlayer.Enable();
     }
@@ -143,5 +152,10 @@ public class PlayerController : MonoBehaviour
     public void Bounce(float bounseForce)
     {
         rigid.AddForce(Vector3.up * bounseForce, ForceMode.Impulse);
+    }
+
+    void OnInteract(InputAction.CallbackContext context)
+    {
+        actionInteract?.Invoke();
     }
 }

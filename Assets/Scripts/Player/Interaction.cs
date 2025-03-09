@@ -19,6 +19,7 @@ public class Interaction : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
+        GameManager.Instance.player.controller.actionInteract += InteractInput;
     }
 
     void Update()
@@ -34,8 +35,11 @@ public class Interaction : MonoBehaviour
             {
                 if(hit.collider.gameObject != curInteractGameObject)
                 {
+                    // Raycast에 부딪힌 오브젝트 참조
                     curInteractGameObject = hit.collider.gameObject;
                     curInteractable = hit.collider.GetComponent<IInteractable>();
+                    
+                    // 아이템 이름, 설명 표시
                     SetPromptText();
                 }
             }
@@ -48,9 +52,23 @@ public class Interaction : MonoBehaviour
         }
     }
 
-    private void SetPromptText()
+    void SetPromptText()
     {
         promptText.gameObject.SetActive(true);
         promptText.text = curInteractable.GetInteractPrompt();
+    }
+
+    void InteractInput()
+    {
+        if (curInteractable != null)
+        {
+            // 아이템 상호작용 호출
+            curInteractable.OnInteract();
+
+            // 현재 아이템 지워주기
+            curInteractGameObject = null;
+            curInteractable = null;
+            promptText.gameObject.SetActive(false);
+        }
     }
 }
