@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCondition : MonoBehaviour
+public class PlayerCondition : MonoBehaviour, IDamagable
 {
     public UICondition uiCondition;
     Condition health => uiCondition.health;
