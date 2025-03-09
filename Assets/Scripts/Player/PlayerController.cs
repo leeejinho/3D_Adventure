@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 moveDir;
 
     [Header("Look")]
-    public Transform transfromCam;
+    public Transform mainCam;
     public float minRotX;
     public float maxRotX;
     public float mouseSensitive;
@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
     {
         camRotx += mouseDelta.y * mouseSensitive;
         camRotx = Mathf.Clamp(camRotx, minRotX, maxRotX);
-        transfromCam.localEulerAngles = new Vector3(-camRotx, 0f, 0f);
+        mainCam.localEulerAngles = new Vector3(-camRotx, 0f, 0f);
 
         transform.eulerAngles += new Vector3(0f, mouseDelta.x * mouseSensitive, 0f);
     }
