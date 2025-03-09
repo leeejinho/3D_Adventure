@@ -13,36 +13,40 @@ public class PlayerController : MonoBehaviour
     public float runStaminaPer;
     public bool isRun;
     public LayerMask groundLayerMask;
-    private Vector2 moveDir;
+    public Vector2 moveDir;
+
+    public Vector2 mousePos;
 
     [Header("Look")]
     public Transform mainCam;
     public float minRotX;
     public float maxRotX;
     public float mouseSensitive;
-    private float camRotx;
-    [SerializeField] private Vector2 mouseDelta;
+    float camRotx;
+    [SerializeField] Vector2 mouseDelta;
 
     // InputAction
     [Header("InputAction")]
-    [SerializeField] private InputActionAsset inputAsset;
-    private InputActionMap inputPlayer;
-    private InputAction move;
-    private InputAction jump;
-    private InputAction look;
-    private InputAction run;
-    private InputAction interaction;
+    [SerializeField] InputActionAsset inputAsset;
+    InputActionMap inputPlayer;
+    InputAction move;
+    InputAction jump;
+    InputAction look;
+    InputAction run;
+    InputAction interaction;
+    InputAction attack;
+    InputAction inventory;
     [HideInInspector] public event Action actionInteract;
-    private InputAction Attack;
+    [HideInInspector] public event Action actionInventory;
 
-    private Rigidbody rigid;
+    Rigidbody rigid;
+    bool isLockCursor = false;
 
     void Start()
     {
         rigid = GetComponent<Rigidbody>();
 
-        Cursor.lockState = CursorLockMode.Locked;
-
+        ToggleCursor();
         InitInputAction();
     }
 
@@ -53,7 +57,11 @@ public class PlayerController : MonoBehaviour
 
     private void LateUpdate()
     {
-        CameraLook();
+        // 마우스커서가 잠겨있다면 카메라 움직임
+        if (isLockCursor)
+            CameraLook();
+
+        mousePos = Input.mousePosition;
     }
 
     void InitInputAction()
@@ -78,7 +86,10 @@ public class PlayerController : MonoBehaviour
         interaction = inputPlayer.FindAction("Interaction");
         interaction.started += OnInteract;
 
-        Attack = inputPlayer.FindAction("Attack");
+        attack = inputPlayer.FindAction("Attack");
+
+        inventory = inputPlayer.FindAction("Inventory");
+        inventory.started += OnInventory;
 
         inputPlayer.Enable();
     }
@@ -157,5 +168,17 @@ public class PlayerController : MonoBehaviour
     void OnInteract(InputAction.CallbackContext context)
     {
         actionInteract?.Invoke();
+    }
+
+    void OnInventory(InputAction.CallbackContext context)
+    {
+        actionInventory?.Invoke();
+        ToggleCursor();
+    }
+
+    void ToggleCursor()
+    {
+        Cursor.lockState = isLockCursor ? CursorLockMode.None : CursorLockMode.Locked;
+        isLockCursor = !isLockCursor;
     }
 }
