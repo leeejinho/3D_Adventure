@@ -13,6 +13,7 @@ public class Inventory : MonoBehaviour
     public TextMeshProUGUI selectedStatName;
     public TextMeshProUGUI selectedStatValue;
     public Button useButton;
+    public TextMeshProUGUI useButtonText;
     public Button dropButton;
 
     ItemSlot[] slots;
@@ -147,7 +148,7 @@ public class Inventory : MonoBehaviour
         selectedItem = slots[idx].item;
         selectedItemIdx = idx;
 
-        selectedItemName.text = selectedItem.name;
+        selectedItemName.text = selectedItem.displayName;
         selectedItemDesc.text = selectedItem.description;
 
         selectedStatName.text = string.Empty;
@@ -172,9 +173,11 @@ public class Inventory : MonoBehaviour
         switch (selectedItem.type)
         {
             case ItemType.Equipable:
+                useButtonText.text = equipped ? "장착해제" : "장착하기";
                 useButton.onClick.AddListener(equipped ? OnUnEquipButton : OnEquipButton);
                 break;
             case ItemType.Consumable:
+                useButtonText.text = "사용하기";
                 useButton.onClick.AddListener(OnUseConsumableButton);
                 break;
             case ItemType.Resource:
@@ -193,6 +196,15 @@ public class Inventory : MonoBehaviour
 
     void RemoveSelectedItem()
     {
+         // 아이템을 장착중이라면 해제
+        if (slots[selectedItemIdx].equipped)
+        {
+            slots[selectedItemIdx].equipped = false;
+            GameManager.Instance.player.equip.UnEquip();
+            // 장착 아웃라인 제거
+            slots[selectedItemIdx].Set();
+        }
+
         // 아이템 개수 감소
         slots[selectedItemIdx].quantity--;
 
@@ -229,11 +241,25 @@ public class Inventory : MonoBehaviour
 
     void OnEquipButton()
     {
+        // 현재 아이템이 장착중이라면
+        if (slots[curEquipIdx].equipped)
+        {
+            slots[curEquipIdx].equipped = false;
+            GameManager.Instance.player.equip.UnEquip();
+        }
 
+        curEquipIdx = selectedItemIdx;
+        slots[selectedItemIdx].equipped = true;
+        GameManager.Instance.player.equip.EquipNew(selectedItem);
+        UpdateUI();
+        useButtonText.text = "장착해제";
     }
 
     void OnUnEquipButton()
     {
-
+        slots[selectedItemIdx].equipped = false;
+        GameManager.Instance.player.equip.UnEquip();
+        UpdateUI();
+        useButtonText.text = "장착하기";
     }
 }

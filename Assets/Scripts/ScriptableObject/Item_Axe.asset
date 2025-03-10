@@ -20,4 +20,4 @@ MonoBehaviour:
   canStack: 0
   maxStackAmount: 0
   consumables: []
-  equipPrefab: {fileID: 0}
+  equipPrefab: {fileID: 794262041547154433, guid: 8632d82974b4bcb49bebaf387ec1b122, type: 3}

@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour
     public float minRotX;
     public float maxRotX;
     public float mouseSensitive;
+    public bool isLockCursor = false;
     float camRotx;
     [SerializeField] Vector2 mouseDelta;
 
@@ -37,10 +38,10 @@ public class PlayerController : MonoBehaviour
     InputAction attack;
     InputAction inventory;
     [HideInInspector] public event Action actionInteract;
+    [HideInInspector] public event Action actionAttack;
     [HideInInspector] public event Action actionInventory;
 
     Rigidbody rigid;
-    bool isLockCursor = false;
 
     void Start()
     {
@@ -87,6 +88,7 @@ public class PlayerController : MonoBehaviour
         interaction.started += OnInteract;
 
         attack = inputPlayer.FindAction("Attack");
+        attack.performed += OnAttack;
 
         inventory = inputPlayer.FindAction("Inventory");
         inventory.started += OnInventory;
@@ -180,5 +182,10 @@ public class PlayerController : MonoBehaviour
     {
         Cursor.lockState = isLockCursor ? CursorLockMode.None : CursorLockMode.Locked;
         isLockCursor = !isLockCursor;
+    }
+
+    void OnAttack(InputAction.CallbackContext context)
+    {
+        actionAttack?.Invoke();
     }
 }
