@@ -154,6 +154,6 @@ MonoBehaviour:
   attackDistance: 1
   useStamina: 10
   doesGatherResources: 1
-  type: 0
+  type: 1
   doesDealDamage: 0
   damage: 0

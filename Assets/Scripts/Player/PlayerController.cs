@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public Animator anim;
+
     [Header("Move")]
     public float moveSpeed;
     public float runSpeed;
@@ -22,7 +24,9 @@ public class PlayerController : MonoBehaviour
     public float minRotX;
     public float maxRotX;
     public float mouseSensitive;
+    public float cameraDistance;
     public bool isLockCursor = false;
+    public bool pointOfView;
     float camRotx;
     [SerializeField] Vector2 mouseDelta;
 
@@ -37,6 +41,7 @@ public class PlayerController : MonoBehaviour
     InputAction interaction;
     InputAction attack;
     InputAction inventory;
+    InputAction viewPoint;
     [HideInInspector] public event Action actionInteract;
     [HideInInspector] public event Action actionAttack;
     [HideInInspector] public event Action actionInventory;
@@ -93,6 +98,9 @@ public class PlayerController : MonoBehaviour
         inventory = inputPlayer.FindAction("Inventory");
         inventory.started += OnInventory;
 
+        viewPoint = inputPlayer.FindAction("ViewPoint");
+        viewPoint.started += OnChangeViewPoint;
+
         inputPlayer.Enable();
     }
 
@@ -109,6 +117,10 @@ public class PlayerController : MonoBehaviour
         dir.y = rigid.velocity.y;
 
         rigid.velocity = dir;
+
+        // 애니메이션 설정
+        anim.SetBool("Move", dir.magnitude > 0.1f);
+        anim.SetBool("Run", dir.magnitude > 0.1f ? isRun : false);
     }
 
     void OnMove(InputAction.CallbackContext context)
@@ -133,6 +145,7 @@ public class PlayerController : MonoBehaviour
         if (IsGround())
         {
             rigid.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            anim.SetTrigger("Jump");
         }
     }
 
@@ -187,5 +200,13 @@ public class PlayerController : MonoBehaviour
     void OnAttack(InputAction.CallbackContext context)
     {
         actionAttack?.Invoke();
+    }
+
+    void OnChangeViewPoint(InputAction.CallbackContext context)
+    {
+        pointOfView = !pointOfView;
+
+        Camera cam = Camera.main;
+        cam.transform.localPosition = new Vector3(cam.transform.localPosition.x, cam.transform.localPosition.y, pointOfView ? 0f : -cameraDistance);
     }
 }
